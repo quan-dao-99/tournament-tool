@@ -1,29 +1,28 @@
-import ToggleButton from '@mui/material/ToggleButton';
-import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
-import type { MouseEvent } from 'react';
 import { useTranslation } from '../i18n';
 import type { Language } from '../types';
 
 export default function LanguageSwitcher() {
   const { language, setLanguage } = useTranslation();
 
-  const handleChange = (_e: MouseEvent<HTMLElement>, value: Language | null) => {
-    if (value) {
-      setLanguage(value);
-    }
-  };
+  const btn = (lang: Language, label: string) => (
+    <button
+      key={lang}
+      onClick={() => setLanguage(lang)}
+      className={[
+        'px-2 py-0.5 text-xs font-medium border transition-colors',
+        language === lang
+          ? 'bg-white text-blue-700 border-white'
+          : 'bg-transparent text-white/80 border-white/40 hover:bg-white/20',
+      ].join(' ')}
+    >
+      {label}
+    </button>
+  );
 
   return (
-    <ToggleButtonGroup
-      size="small"
-      exclusive
-      value={language}
-      onChange={handleChange}
-      color="primary"
-      sx={{ bgcolor: 'background.paper' }}
-    >
-      <ToggleButton value="en">EN</ToggleButton>
-      <ToggleButton value="vi">VI</ToggleButton>
-    </ToggleButtonGroup>
+    <div className="flex rounded overflow-hidden border border-white/40">
+      {btn('en', 'EN')}
+      {btn('vi', 'VI')}
+    </div>
   );
 }

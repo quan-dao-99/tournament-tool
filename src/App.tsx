@@ -1,18 +1,4 @@
 import { useState } from 'react';
-import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Container from '@mui/material/Container';
-import IconButton from '@mui/material/IconButton';
-import Stack from '@mui/material/Stack';
-import Toolbar from '@mui/material/Toolbar';
-import Tooltip from '@mui/material/Tooltip';
-import Typography from '@mui/material/Typography';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
-import FileDownloadIcon from '@mui/icons-material/FileDownload';
-import FileUploadIcon from '@mui/icons-material/FileUpload';
-import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import LanguageSwitcher from './components/LanguageSwitcher';
 import ThemeToggle from './components/ThemeToggle';
 import ConfirmDialog from './components/ConfirmDialog';
@@ -70,52 +56,64 @@ export default function App() {
   };
 
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
-      <AppBar position="static">
-        <Toolbar>
+    <div className="min-h-screen bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100">
+      <header className="bg-blue-700 dark:bg-blue-900 text-white shadow">
+        <div className="max-w-6xl mx-auto px-4 h-14 flex items-center gap-2">
           {prev && (
-            <Tooltip title={t('app.back')}>
-              <IconButton
-                color="inherit"
-                edge="start"
-                sx={{ mr: 1 }}
-                onClick={() => dispatch({ type: 'GO_TO_STAGE', stage: prev })}
-              >
-                <ArrowBackIcon />
-              </IconButton>
-            </Tooltip>
+            <button
+              title={t('app.back')}
+              className="p-1.5 rounded hover:bg-white/20 transition-colors"
+              onClick={() => dispatch({ type: 'GO_TO_STAGE', stage: prev })}
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
           )}
-          <EmojiEventsIcon sx={{ mr: 1 }} />
-          <Typography variant="h6" sx={{ flexGrow: 1 }}>
-            {t('app.title')}
-          </Typography>
-          <Stack direction="row" spacing={1} alignItems="center">
+
+          <svg className="w-5 h-5 shrink-0" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 2a10 10 0 100 20A10 10 0 0012 2zm1 14.93V17a1 1 0 11-2 0v-.07A8.001 8.001 0 014.07 11H4a1 1 0 110-2h.07A8.001 8.001 0 0111 4.07V4a1 1 0 112 0v.07A8.001 8.001 0 0119.93 11H20a1 1 0 110 2h-.07A8.001 8.001 0 0113 16.93z" />
+          </svg>
+
+          <span className="font-semibold text-base flex-1 truncate">{t('app.title')}</span>
+
+          <div className="flex items-center gap-1 shrink-0">
             <LanguageSwitcher />
             <ThemeToggle />
-            <Tooltip title={t('io.export')}>
-              <IconButton color="inherit" onClick={() => setIoMode('export')}>
-                <FileDownloadIcon />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title={t('io.import')}>
-              <IconButton color="inherit" onClick={() => setIoMode('import')}>
-                <FileUploadIcon />
-              </IconButton>
-            </Tooltip>
-            <Button
-              color="inherit"
-              startIcon={<RestartAltIcon />}
+            <button
+              title={t('io.export')}
+              className="p-1.5 rounded hover:bg-white/20 transition-colors"
+              onClick={() => setIoMode('export')}
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M8 8l4-4m0 0l4 4m-4-4v12" />
+              </svg>
+            </button>
+            <button
+              title={t('io.import')}
+              className="p-1.5 rounded hover:bg-white/20 transition-colors"
+              onClick={() => setIoMode('import')}
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M8 12l4 4m0 0l4-4m-4 4V4" />
+              </svg>
+            </button>
+            <button
+              className="flex items-center gap-1 px-2 py-1 rounded text-sm hover:bg-white/20 transition-colors"
               onClick={() => setResetOpen(true)}
             >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
               {t('app.reset')}
-            </Button>
-          </Stack>
-        </Toolbar>
-      </AppBar>
+            </button>
+          </div>
+        </div>
+      </header>
 
-      <Container maxWidth="lg" sx={{ py: 4 }}>
+      <main className="max-w-6xl mx-auto px-4 py-8">
         {renderStage()}
-      </Container>
+      </main>
 
       <ExportImportDialog
         open={ioMode !== null}
@@ -133,6 +131,6 @@ export default function App() {
         }}
         onCancel={() => setResetOpen(false)}
       />
-    </Box>
+    </div>
   );
 }
