@@ -130,33 +130,38 @@ export function computeStandings(
     }
   }
 
-  // Assign ranks and the reason each team sits below the one above it.
-  return ordered.map((entry, index) => {
-    let reason: TieBreakReason = 'none';
-    if (index > 0) {
-      const prev = ordered[index - 1];
-      if (prev.stats.wins !== entry.stats.wins) {
-        reason = 'wins';
-      } else if (prev.h2h !== entry.h2h) {
-        reason = 'headToHead';
-      } else if (
-        prev.stats.totalWonDurationSeconds !== entry.stats.totalWonDurationSeconds
-      ) {
-        reason = 'duration';
-      } else {
-        reason = 'random';
-      }
+  // Assign ranks and the reason each team ranks above the one below it.
+  // A non-'wins' reason means those two teams were tied on wins and a
+  // secondary criterion separated them — the chip belongs on the team that
+  // *benefited* from the tiebreak (the higher-ranked one), not the one that lost.
+  const entries: StandingEntry[] = ordered.map((entry, index) => ({
+    teamId: entry.stats.teamId,
+    rank: index + 1,
+    wins: entry.stats.wins,
+    losses: entry.stats.losses,
+    played: entry.stats.played,
+    totalWonDurationSeconds: entry.stats.totalWonDurationSeconds,
+    tieBreakReason: 'none' as TieBreakReason,
+  }));
+
+  for (let i = 1; i < ordered.length; i++) {
+    const above = ordered[i - 1];
+    const below = ordered[i];
+    let reason: TieBreakReason;
+    if (above.stats.wins !== below.stats.wins) {
+      reason = 'wins';
+    } else if (above.h2h !== below.h2h) {
+      reason = 'headToHead';
+    } else if (above.stats.totalWonDurationSeconds !== below.stats.totalWonDurationSeconds) {
+      reason = 'duration';
+    } else {
+      reason = 'random';
     }
-    return {
-      teamId: entry.stats.teamId,
-      rank: index + 1,
-      wins: entry.stats.wins,
-      losses: entry.stats.losses,
-      played: entry.stats.played,
-      totalWonDurationSeconds: entry.stats.totalWonDurationSeconds,
-      tieBreakReason: reason,
-    };
-  });
+    // Attach the reason to the higher-ranked team (the tiebreak winner).
+    entries[i - 1].tieBreakReason = reason;
+  }
+
+  return entries;
 }
 
 /**
