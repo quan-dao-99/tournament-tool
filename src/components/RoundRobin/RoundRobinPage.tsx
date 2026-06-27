@@ -5,6 +5,7 @@ import { firstKnockoutStage } from '../../utils/standings';
 import { makeNameLookup } from '../../utils/teams';
 import MatchRow from '../MatchRow';
 import StandingsTable from '../Standings/StandingsTable';
+import DiscordExportButton from '../DiscordExportButton';
 
 export default function RoundRobinPage() {
   const { state, dispatch } = useTournament();
@@ -37,7 +38,10 @@ export default function RoundRobinPage() {
   return (
     <div className="flex flex-col gap-8">
       <div>
-        <h1 className="text-2xl font-bold mb-4 text-gray-900 dark:text-gray-100">{t('rr.heading')}</h1>
+        <div className="flex items-center justify-between mb-4">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{t('rr.heading')}</h1>
+          <DiscordExportButton stageLabel={t('rr.heading')} />
+        </div>
 
         <div className="flex flex-col gap-2">
           {state.rrRounds.map((round, idx) => {

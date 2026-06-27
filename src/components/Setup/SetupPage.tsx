@@ -87,17 +87,27 @@ export default function SetupPage() {
           {t('setup.teamCount', { count: teamCount })}
         </p>
 
-        <div className="flex flex-col gap-1 w-56">
+        <div className="flex flex-col gap-1">
           <label className="text-sm font-medium text-gray-700 dark:text-gray-300">{t('setup.roundsLabel')}</label>
-          <input
-            type="number"
-            min={1}
-            max={roundCap}
-            value={rounds}
-            onChange={(e) => setRounds(Number(e.target.value))}
-            className="px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-blue-500"
-          />
-          <span className="text-xs text-gray-500 dark:text-gray-400">{t('setup.roundsHelper', { max: roundCap })}</span>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setRounds((r) => Math.max(1, r - 1))}
+              disabled={rounds <= 1}
+              className="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors text-lg leading-none"
+            >
+              −
+            </button>
+            <span className="w-8 text-center text-sm font-medium text-gray-900 dark:text-gray-100">{rounds}</span>
+            <button
+              type="button"
+              onClick={() => setRounds((r) => Math.min(roundCap, r + 1))}
+              disabled={rounds >= roundCap}
+              className="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors text-lg leading-none"
+            >
+              +
+            </button>
+          </div>
         </div>
 
         {errors.length > 0 && (

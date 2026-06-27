@@ -33,7 +33,7 @@ function loadInitialLanguage(): Language {
   } catch {
     // ignore storage access errors
   }
-  return 'en';
+  return 'vi';
 }
 
 function interpolate(template: string, params?: TranslateParams): string {

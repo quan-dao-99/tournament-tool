@@ -4,6 +4,7 @@ import { useTournament } from '../../context/TournamentContext';
 import { useTranslation } from '../../i18n';
 import { makeNameLookup } from '../../utils/teams';
 import ConfirmDialog from '../ConfirmDialog';
+import DiscordExportButton from '../DiscordExportButton';
 
 const BOX_W = 200;
 
@@ -293,8 +294,20 @@ export default function BracketView({ activeStage }: { activeStage: TournamentSt
     />,
   );
 
+  const stageLabel = (() => {
+    switch (activeStage) {
+      case 'quarterfinals': return t('bracket.quarterfinals');
+      case 'semifinals': return t('bracket.semifinals');
+      default: return t('finals.heading');
+    }
+  })();
+
   return (
     <div className="flex flex-col gap-6">
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{stageLabel}</h1>
+        <DiscordExportButton stageLabel={stageLabel} />
+      </div>
       {finals?.winnerId && (
         <div className="flex items-center gap-2 bg-green-50 dark:bg-green-900/30 border border-green-300 dark:border-green-700 rounded-lg px-4 py-3">
           <svg className="w-5 h-5 text-green-600 dark:text-green-400 shrink-0" fill="currentColor" viewBox="0 0 24 24">
