@@ -1,22 +1,9 @@
 import { useState } from 'react';
-import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Container from '@mui/material/Container';
-import IconButton from '@mui/material/IconButton';
-import Stack from '@mui/material/Stack';
-import Toolbar from '@mui/material/Toolbar';
-import Tooltip from '@mui/material/Tooltip';
-import Typography from '@mui/material/Typography';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
-import FileDownloadIcon from '@mui/icons-material/FileDownload';
-import FileUploadIcon from '@mui/icons-material/FileUpload';
-import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import LanguageSwitcher from './components/LanguageSwitcher';
 import ThemeToggle from './components/ThemeToggle';
 import ConfirmDialog from './components/ConfirmDialog';
 import ExportImportDialog, { type IoMode } from './components/ExportImportDialog';
+import DiscordExportDialog from './components/DiscordExportDialog';
 import SetupPage from './components/Setup/SetupPage';
 import RoundRobinPage from './components/RoundRobin/RoundRobinPage';
 import BracketView from './components/Bracket/BracketView';
@@ -50,8 +37,20 @@ export default function App() {
   const { t } = useTranslation();
   const [ioMode, setIoMode] = useState<IoMode | null>(null);
   const [resetOpen, setResetOpen] = useState(false);
+  const [discordOpen, setDiscordOpen] = useState(false);
 
   const prev = previousStage(state);
+
+  const stageLabel = (() => {
+    switch (state.currentStage) {
+      case 'round-robin': return t('rr.heading');
+      case 'quarterfinals': return t('bracket.quarterfinals');
+      case 'semifinals': return t('bracket.semifinals');
+      case 'finals':
+      case 'complete': return t('finals.heading');
+      default: return null;
+    }
+  })();
 
   const renderStage = () => {
     switch (state.currentStage) {
@@ -70,57 +69,86 @@ export default function App() {
   };
 
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
-      <AppBar position="static">
-        <Toolbar>
+    <div className="min-h-screen bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100">
+      <header className="bg-blue-700 dark:bg-blue-900 text-white shadow">
+        <div className="max-w-6xl mx-auto px-4 h-14 flex items-center gap-2">
           {prev && (
-            <Tooltip title={t('app.back')}>
-              <IconButton
-                color="inherit"
-                edge="start"
-                sx={{ mr: 1 }}
-                onClick={() => dispatch({ type: 'GO_TO_STAGE', stage: prev })}
-              >
-                <ArrowBackIcon />
-              </IconButton>
-            </Tooltip>
+            <button
+              title={t('app.back')}
+              className="p-1.5 rounded hover:bg-white/20 transition-colors"
+              onClick={() => dispatch({ type: 'GO_TO_STAGE', stage: prev })}
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
           )}
-          <EmojiEventsIcon sx={{ mr: 1 }} />
-          <Typography variant="h6" sx={{ flexGrow: 1 }}>
-            {t('app.title')}
-          </Typography>
-          <Stack direction="row" spacing={1} alignItems="center">
+
+          <svg className="w-5 h-5 shrink-0" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 2a10 10 0 100 20A10 10 0 0012 2zm1 14.93V17a1 1 0 11-2 0v-.07A8.001 8.001 0 014.07 11H4a1 1 0 110-2h.07A8.001 8.001 0 0111 4.07V4a1 1 0 112 0v.07A8.001 8.001 0 0119.93 11H20a1 1 0 110 2h-.07A8.001 8.001 0 0113 16.93z" />
+          </svg>
+
+          <span className="font-semibold text-base flex-1 truncate">{t('app.title')}</span>
+
+          <div className="flex items-center gap-1 shrink-0">
             <LanguageSwitcher />
             <ThemeToggle />
-            <Tooltip title={t('io.export')}>
-              <IconButton color="inherit" onClick={() => setIoMode('export')}>
-                <FileDownloadIcon />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title={t('io.import')}>
-              <IconButton color="inherit" onClick={() => setIoMode('import')}>
-                <FileUploadIcon />
-              </IconButton>
-            </Tooltip>
-            <Button
-              color="inherit"
-              startIcon={<RestartAltIcon />}
+            {stageLabel && (
+              <button
+                title={t('discord.button', { stage: stageLabel })}
+                className="flex items-center gap-1 px-2 py-1 rounded text-sm hover:bg-white/20 transition-colors"
+                onClick={() => setDiscordOpen(true)}
+              >
+                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
+                </svg>
+                {t('discord.button', { stage: stageLabel })}
+              </button>
+            )}
+            <button
+              title={t('io.export')}
+              className="p-1.5 rounded hover:bg-white/20 transition-colors"
+              onClick={() => setIoMode('export')}
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M8 8l4-4m0 0l4 4m-4-4v12" />
+              </svg>
+            </button>
+            <button
+              title={t('io.import')}
+              className="p-1.5 rounded hover:bg-white/20 transition-colors"
+              onClick={() => setIoMode('import')}
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M8 12l4 4m0 0l4-4m-4 4V4" />
+              </svg>
+            </button>
+            <button
+              className="flex items-center gap-1 px-2 py-1 rounded text-sm hover:bg-white/20 transition-colors"
               onClick={() => setResetOpen(true)}
             >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
               {t('app.reset')}
-            </Button>
-          </Stack>
-        </Toolbar>
-      </AppBar>
+            </button>
+          </div>
+        </div>
+      </header>
 
-      <Container maxWidth="lg" sx={{ py: 4 }}>
+      <main className="max-w-6xl mx-auto px-4 py-8">
         {renderStage()}
-      </Container>
+      </main>
 
       <ExportImportDialog
         open={ioMode !== null}
         mode={ioMode ?? 'export'}
         onClose={() => setIoMode(null)}
+      />
+
+      <DiscordExportDialog
+        open={discordOpen}
+        onClose={() => setDiscordOpen(false)}
       />
 
       <ConfirmDialog
@@ -133,6 +161,6 @@ export default function App() {
         }}
         onCancel={() => setResetOpen(false)}
       />
-    </Box>
+    </div>
   );
 }

@@ -1,11 +1,4 @@
 import { useMemo, useState } from 'react';
-import Alert from '@mui/material/Alert';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Paper from '@mui/material/Paper';
-import Stack from '@mui/material/Stack';
-import TextField from '@mui/material/TextField';
-import Typography from '@mui/material/Typography';
 import { useTournament } from '../../context/TournamentContext';
 import { useTranslation } from '../../i18n';
 import { maxRounds } from '../../utils/scheduling';
@@ -65,9 +58,7 @@ export default function SetupPage() {
   };
 
   const handleStart = () => {
-    if (!canStart) {
-      return;
-    }
+    if (!canStart) return;
     if (inProgress) {
       setRestartConfirm(true);
     } else {
@@ -76,57 +67,67 @@ export default function SetupPage() {
   };
 
   return (
-    <Paper sx={{ p: 4, maxWidth: 640, mx: 'auto' }} elevation={2}>
-      <Typography variant="h4" gutterBottom>
-        {t('setup.heading')}
-      </Typography>
-      <Stack spacing={3} sx={{ mt: 2 }}>
-        <TextField
-          label={t('setup.teamsLabel')}
-          helperText={t('setup.teamsHelper')}
-          placeholder={t('setup.teamsPlaceholder')}
-          multiline
-          minRows={6}
-          fullWidth
-          value={teamsText}
-          onChange={(e) => setTeamsText(e.target.value)}
-        />
-        <Typography variant="body2" color="text.secondary">
+    <div className="max-w-xl mx-auto bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow p-8">
+      <h1 className="text-2xl font-bold mb-6 text-gray-900 dark:text-gray-100">{t('setup.heading')}</h1>
+
+      <div className="flex flex-col gap-5">
+        <div className="flex flex-col gap-1">
+          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">{t('setup.teamsLabel')}</label>
+          <textarea
+            rows={6}
+            placeholder={t('setup.teamsPlaceholder')}
+            value={teamsText}
+            onChange={(e) => setTeamsText(e.target.value)}
+            className="px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-blue-500 resize-none"
+          />
+          <span className="text-xs text-gray-500 dark:text-gray-400">{t('setup.teamsHelper')}</span>
+        </div>
+
+        <p className="text-sm text-gray-500 dark:text-gray-400">
           {t('setup.teamCount', { count: teamCount })}
-        </Typography>
-        <TextField
-          label={t('setup.roundsLabel')}
-          helperText={t('setup.roundsHelper', { max: roundCap })}
-          type="number"
-          value={rounds}
-          onChange={(e) => setRounds(Number(e.target.value))}
-          inputProps={{ min: 1, max: roundCap }}
-          sx={{ width: 220 }}
-        />
+        </p>
+
+        <div className="flex flex-col gap-1 w-56">
+          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">{t('setup.roundsLabel')}</label>
+          <input
+            type="number"
+            min={1}
+            max={roundCap}
+            value={rounds}
+            onChange={(e) => setRounds(Number(e.target.value))}
+            className="px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          />
+          <span className="text-xs text-gray-500 dark:text-gray-400">{t('setup.roundsHelper', { max: roundCap })}</span>
+        </div>
+
         {errors.length > 0 && (
-          <Box>
+          <div className="flex flex-col gap-1">
             {errors.map((err) => (
-              <Alert key={err} severity="error" sx={{ mb: 1 }}>
+              <div key={err} className="text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/30 border border-red-300 dark:border-red-700 rounded px-3 py-2">
                 {err}
-              </Alert>
+              </div>
             ))}
-          </Box>
+          </div>
         )}
-        <Stack direction="row" spacing={2}>
-          <Button variant="contained" size="large" disabled={!canStart} onClick={handleStart}>
+
+        <div className="flex gap-3">
+          <button
+            disabled={!canStart}
+            onClick={handleStart}
+            className="px-5 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium transition-colors"
+          >
             {t('setup.start')}
-          </Button>
+          </button>
           {inProgress && (
-            <Button
-              variant="outlined"
-              size="large"
+            <button
               onClick={() => dispatch({ type: 'GO_TO_STAGE', stage: 'round-robin' })}
+              className="px-5 py-2 rounded-lg border border-blue-600 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 font-medium transition-colors"
             >
               {t('setup.resume')}
-            </Button>
+            </button>
           )}
-        </Stack>
-      </Stack>
+        </div>
+      </div>
 
       <ConfirmDialog
         open={restartConfirm}
@@ -138,6 +139,6 @@ export default function SetupPage() {
         }}
         onCancel={() => setRestartConfirm(false)}
       />
-    </Paper>
+    </div>
   );
 }

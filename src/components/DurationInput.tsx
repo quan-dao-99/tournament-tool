@@ -1,10 +1,8 @@
 import { useEffect, useRef, useState, type ChangeEvent } from 'react';
-import TextField from '@mui/material/TextField';
 import { useTranslation } from '../i18n';
 import { formatDuration, parseDuration } from '../utils/format';
 
 interface DurationInputProps {
-  /** Current value in seconds, or undefined if unset. */
   valueSeconds?: number;
   disabled?: boolean;
   onChange: (seconds: number | null) => void;
@@ -15,8 +13,6 @@ export default function DurationInput({ valueSeconds, disabled, onChange }: Dura
   const [text, setText] = useState(valueSeconds != null ? formatDuration(valueSeconds) : '');
   const focusedRef = useRef(false);
 
-  // Sync from the stored value only when the user is not actively editing,
-  // otherwise live commits would overwrite the text mid-typing.
   useEffect(() => {
     if (!focusedRef.current) {
       setText(valueSeconds != null ? formatDuration(valueSeconds) : '');
@@ -32,29 +28,32 @@ export default function DurationInput({ valueSeconds, disabled, onChange }: Dura
     onChange(next.trim() === '' ? null : parseDuration(next));
   };
 
-  const handleFocus = () => {
-    focusedRef.current = true;
-  };
-
+  const handleFocus = () => { focusedRef.current = true; };
   const handleBlur = () => {
     focusedRef.current = false;
-    // Normalise the displayed text to the committed value.
     setText(valueSeconds != null ? formatDuration(valueSeconds) : '');
   };
 
   return (
-    <TextField
-      size="small"
-      label={t('common.duration')}
-      placeholder="12:30"
-      value={text}
-      disabled={disabled}
-      error={showError}
-      onChange={handleChange}
-      onFocus={handleFocus}
-      onBlur={handleBlur}
-      sx={{ width: 120 }}
-      inputProps={{ inputMode: 'text' }}
-    />
+    <div className="flex flex-col gap-0.5 w-28">
+      <label className="text-xs text-gray-500 dark:text-gray-400">{t('common.duration')}</label>
+      <input
+        type="text"
+        inputMode="text"
+        placeholder="12:30"
+        value={text}
+        disabled={disabled}
+        onChange={handleChange}
+        onFocus={handleFocus}
+        onBlur={handleBlur}
+        className={[
+          'px-2 py-1 text-sm rounded border bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 outline-none transition-colors',
+          showError
+            ? 'border-red-500 focus:ring-1 focus:ring-red-500'
+            : 'border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-1 focus:ring-blue-500',
+          disabled ? 'opacity-50 cursor-not-allowed' : '',
+        ].join(' ')}
+      />
+    </div>
   );
 }

@@ -110,6 +110,12 @@ export const vi: Record<TranslationKey, string> = {
   'io.export': 'Xuất',
   'io.import': 'Nhập',
 
+  // Discord Export
+  'discord.title': 'Xuất ra Discord',
+  'discord.help': 'Sao chép tin nhắn này và dán vào bất kỳ kênh Discord nào. Tin nhắn sử dụng định dạng markdown của Discord.',
+  'discord.copy': 'Sao Chép vào Discord',
+  'discord.button': 'Chia sẻ {stage}',
+
   // Theme
   'theme.toLight': 'Chuyển sang chế độ sáng',
   'theme.toDark': 'Chuyển sang chế độ tối',

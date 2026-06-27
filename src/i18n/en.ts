@@ -108,6 +108,12 @@ export const en = {
   'io.export': 'Export',
   'io.import': 'Import',
 
+  // Discord Export
+  'discord.title': 'Export to Discord',
+  'discord.help': 'Copy this message and paste it into any Discord channel. It uses Discord markdown formatting.',
+  'discord.copy': 'Copy to Discord',
+  'discord.button': 'Share {stage}',
+
   // Theme
   'theme.toLight': 'Switch to light mode',
   'theme.toDark': 'Switch to dark mode',

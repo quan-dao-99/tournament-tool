@@ -2,13 +2,12 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
   type ReactNode,
 } from 'react';
-import { ThemeProvider } from '@mui/material/styles';
 import type { ThemeMode } from '../types';
-import { buildTheme } from '../theme';
 
 const THEME_STORAGE_KEY = 'tournament-tool-theme';
 
@@ -34,6 +33,15 @@ function loadInitialMode(): ThemeMode {
 export function ThemeModeProvider({ children }: { children: ReactNode }) {
   const [mode, setMode] = useState<ThemeMode>(loadInitialMode);
 
+  useEffect(() => {
+    const root = document.documentElement;
+    if (mode === 'dark') {
+      root.classList.add('dark');
+    } else {
+      root.classList.remove('dark');
+    }
+  }, [mode]);
+
   const toggleMode = useCallback(() => {
     setMode((prev) => {
       const next: ThemeMode = prev === 'light' ? 'dark' : 'light';
@@ -46,12 +54,11 @@ export function ThemeModeProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
-  const theme = useMemo(() => buildTheme(mode), [mode]);
   const value = useMemo<ThemeModeContextValue>(() => ({ mode, toggleMode }), [mode, toggleMode]);
 
   return (
     <ThemeModeContext.Provider value={value}>
-      <ThemeProvider theme={theme}>{children}</ThemeProvider>
+      {children}
     </ThemeModeContext.Provider>
   );
 }

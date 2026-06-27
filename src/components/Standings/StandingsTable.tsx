@@ -1,16 +1,4 @@
 import { useMemo } from 'react';
-import Box from '@mui/material/Box';
-import Chip from '@mui/material/Chip';
-import Paper from '@mui/material/Paper';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Tooltip from '@mui/material/Tooltip';
-import Typography from '@mui/material/Typography';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import type { TieBreakReason } from '../../types';
 import { useTournament } from '../../context/TournamentContext';
 import { useTranslation } from '../../i18n';
@@ -48,58 +36,61 @@ export default function StandingsTable() {
   };
 
   return (
-    <Box>
-      <Typography variant="h5" gutterBottom>
-        {t('standings.heading')}
-      </Typography>
-      <TableContainer component={Paper} variant="outlined">
-        <Table size="small">
-          <TableHead>
-            <TableRow>
-              <TableCell>{t('standings.rank')}</TableCell>
-              <TableCell>{t('standings.team')}</TableCell>
-              <TableCell align="center">{t('standings.wins')}</TableCell>
-              <TableCell align="center">{t('standings.losses')}</TableCell>
-              <TableCell align="center">{t('standings.duration')}</TableCell>
-              <TableCell align="center">{t('standings.tiebreak')}</TableCell>
-              <TableCell align="center">{t('standings.qualifies')}</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
+    <div>
+      <h2 className="text-xl font-bold mb-3 text-gray-900 dark:text-gray-100">{t('standings.heading')}</h2>
+      <div className="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
+        <table className="w-full text-sm">
+          <thead className="bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 text-xs uppercase">
+            <tr>
+              <th className="px-3 py-2 text-left font-medium">{t('standings.rank')}</th>
+              <th className="px-3 py-2 text-left font-medium">{t('standings.team')}</th>
+              <th className="px-3 py-2 text-center font-medium">{t('standings.wins')}</th>
+              <th className="px-3 py-2 text-center font-medium">{t('standings.losses')}</th>
+              <th className="px-3 py-2 text-center font-medium">{t('standings.duration')}</th>
+              <th className="px-3 py-2 text-center font-medium">{t('standings.tiebreak')}</th>
+              <th className="px-3 py-2 text-center font-medium">{t('standings.qualifies')}</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
             {standings.map((entry) => {
               const qualifies = entry.rank <= qualifyCount;
               return (
-                <TableRow
+                <tr
                   key={entry.teamId}
-                  sx={{
-                    bgcolor: qualifies ? 'action.selected' : undefined,
-                  }}
+                  className={qualifies ? 'bg-blue-50 dark:bg-blue-900/20' : 'bg-white dark:bg-gray-900'}
                 >
-                  <TableCell>{entry.rank}</TableCell>
-                  <TableCell>{getName(entry.teamId)}</TableCell>
-                  <TableCell align="center">{entry.wins}</TableCell>
-                  <TableCell align="center">{entry.losses}</TableCell>
-                  <TableCell align="center">
+                  <td className="px-3 py-2 text-gray-700 dark:text-gray-300">{entry.rank}</td>
+                  <td className="px-3 py-2 font-medium text-gray-900 dark:text-gray-100">{getName(entry.teamId)}</td>
+                  <td className="px-3 py-2 text-center text-gray-700 dark:text-gray-300">{entry.wins}</td>
+                  <td className="px-3 py-2 text-center text-gray-700 dark:text-gray-300">{entry.losses}</td>
+                  <td className="px-3 py-2 text-center text-gray-700 dark:text-gray-300 font-mono">
                     {formatDuration(entry.totalWonDurationSeconds)}
-                  </TableCell>
-                  <TableCell align="center">
+                  </td>
+                  <td className="px-3 py-2 text-center">
                     {CHIP_REASONS.includes(entry.tieBreakReason) ? (
-                      <Tooltip title={reasonTooltip[entry.tieBreakReason]}>
-                        <Chip size="small" variant="outlined" label={reasonLabel[entry.tieBreakReason]} />
-                      </Tooltip>
+                      <span
+                        title={reasonTooltip[entry.tieBreakReason]}
+                        className="inline-block text-xs px-2 py-0.5 rounded border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400 cursor-default"
+                      >
+                        {reasonLabel[entry.tieBreakReason]}
+                      </span>
                     ) : (
-                      reasonLabel.none
+                      <span className="text-gray-400 dark:text-gray-600">{reasonLabel.none}</span>
                     )}
-                  </TableCell>
-                  <TableCell align="center">
-                    {qualifies && <CheckCircleIcon color="success" fontSize="small" />}
-                  </TableCell>
-                </TableRow>
+                  </td>
+                  <td className="px-3 py-2 text-center">
+                    {qualifies && (
+                      <svg className="w-4 h-4 text-green-600 dark:text-green-400 inline-block" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                      </svg>
+                    )}
+                  </td>
+                </tr>
               );
             })}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </Box>
+          </tbody>
+        </table>
+      </div>
+    </div>
   );
 }
